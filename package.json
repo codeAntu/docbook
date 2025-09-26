@@ -11,7 +11,9 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.7.3",
     "@neondatabase/serverless": "^1.0.1",
+    "dotenv": "^17.2.2",
     "drizzle-orm": "^0.44.5",
     "hono": "^4.9.8"
   },
