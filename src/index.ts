@@ -1,9 +1,12 @@
-import { Hono } from 'hono'
+import { Hono } from "hono";
+import admin from "./routes/admin/admin";
 
-const app = new Hono()
+const app = new Hono().basePath("/api");
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+app.route("/admin", admin);
 
-export default app
+app.get("/", (c) => {
+  return c.text("Hello Hono!");
+});
+
+export default app;
