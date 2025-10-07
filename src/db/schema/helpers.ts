@@ -3,9 +3,9 @@ import { pgEnum, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 export const genderEnum = pgEnum("gender", ["male", "female", "other"]);
 
 export const ID = uuid("id").primaryKey().defaultRandom();
-export const Name = varchar("name", { length: 256 }).notNull();
-export const Phone = varchar("phone", { length: 15 }).notNull().unique();
-export const Email = varchar("email", { length: 256 }).unique();
+export const Name = varchar("name", { length: 256 });
+export const Phone = varchar("phone", { length: 15 }).notNull();
+export const Email = varchar("email", { length: 256 });
 export const ProfilePicture = varchar("profile_picture", {
   length: 512,
 });

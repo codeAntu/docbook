@@ -21,11 +21,10 @@ import {
 export const doctors = pgTable("doctors", {
   id: ID,
   name: Name,
-  email: Email,
-  phone: Phone,
+  phone: Phone.unique(),
+  email: Email.unique(),
   about: About,
   gender: Gender,
-  dateOfBirth: DateOfBirth,
   profilePicture: ProfilePicture,
   qualifications: Qualifications,
   specialty: Specialty,

@@ -1,22 +1,22 @@
-import { boolean, pgTable } from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
 import {
-  ID,
-  Email,
-  Phone,
-  Name,
   CreatedAt,
-  VerificationCode,
-  VerificationExpiry,
+  DateOfBirth,
+  Email,
+  ID,
+  Name,
+  Phone,
+  ProfilePicture,
+  UpdatedAt
 } from "./helpers";
 
 export const users = pgTable("users", {
   id: ID,
   name: Name,
-  phone: Phone,
-  email: Email,
-  verified: boolean().default(false).notNull(),
-  verificationCode: VerificationCode,
-  verificationExpiry: VerificationExpiry,
+  phone: Phone.unique(),
+  email: Email.unique(),
+  dateOfBirth: DateOfBirth,
+  profilePicture: ProfilePicture,
   createdAt: CreatedAt,
-  updatedAt: CreatedAt,
+  updatedAt: UpdatedAt,
 });
