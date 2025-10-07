@@ -18,6 +18,11 @@ export const Department = varchar("department", { length: 256 });
 export const DepartmentId = uuid("department_id");
 export const Description = text("description");
 
+export const VerificationCode = varchar("verification_code", { length: 6 });
+export const VerificationExpiry = timestamp("verification_expiry", {
+  withTimezone: true,
+});
+
 export const CreatedAt = timestamp("created_at", { withTimezone: true })
   .notNull()
   .defaultNow();
