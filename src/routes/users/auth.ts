@@ -36,7 +36,6 @@ auth.post("/send-code", zValidator("json", zSendCode), async (c) => {
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Store verification code in KV
     await put<VerificationData>(
       `${authKVPrefix}${phone}`,
       {
@@ -67,7 +66,6 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
   try {
     const { phone, code } = c.req.valid("json");
 
-    // Get verification data from KV
     const verificationData = await get<VerificationData>(
       `${authKVPrefix}${phone}`
     );
@@ -83,7 +81,6 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
       return c.json(Responses.badRequest("Invalid verification code"), 400);
     }
 
-    // Delete verification data from KV
     await del(`${authKVPrefix}${phone}`);
 
     let user = await findUserByNumber(phone);
