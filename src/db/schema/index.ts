@@ -2,7 +2,6 @@
 export * from "./department";
 export * from "./doctor";
 export * from "./helpers";
-export * from "./tempUser";
 export * from "./users";
 
 // Export all relations

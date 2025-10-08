@@ -1,11 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
-import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod";
 import { db } from "../../db/db";
 import { doctors } from "../../db/schema/doctor";
-import { TempUser } from "../../db/schema/tempUser";
 import { findDoctorByNumber } from "../../helpers/doctors/doctors";
+import { del, get, put, VerificationData } from "../../helpers/kv/verification";
 import { canBeDoctor } from "../../helpers/phoneValidator";
 import { sendVerificationCode } from "../../sms/sms";
 import { Responses } from "../../utils/responses";
@@ -22,6 +21,8 @@ const zVerifyCode = z.object({
   code: z.string().length(6),
 });
 
+const authKVPrefix = `verification:doctor:`;
+
 auth.post("/send-code", zValidator("json", zSendCode), async (c) => {
   try {
     const { phone } = c.req.valid("json");
@@ -34,24 +35,16 @@ auth.post("/send-code", zValidator("json", zSendCode), async (c) => {
     }
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expirationTime = Date.now() + 10 * 60 * 1000;
 
-    await db
-      .insert(TempUser)
-      .values({
-        phone,
-        verificationCode: code,
-        verificationExpiry: new Date(expirationTime),
+    // Store verification code in KV
+    await put<VerificationData>(
+      `${authKVPrefix}${phone}`,
+      {
+        code,
         userType: "doctor",
-      })
-      .onConflictDoUpdate({
-        target: TempUser.phone,
-        set: {
-          verificationCode: code,
-          verificationExpiry: new Date(expirationTime),
-          userType: "doctor",
-        },
-      });
+      },
+      10 * 60
+    ); // 10 minutes TTL
 
     // Send SMS with verification code
     await sendVerificationCode(phone, code);
@@ -74,34 +67,24 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
   try {
     const { phone, code } = c.req.valid("json");
 
-    const tempUserArr = await db
-      .select()
-      .from(TempUser)
-      .where(and(eq(TempUser.phone, phone), eq(TempUser.userType, "doctor")))
-      .limit(1);
+    // Get verification data from KV
+    const verificationData = await get<VerificationData>(
+      `${authKVPrefix}${phone}`
+    );
 
-    if (!tempUserArr.length) {
+    if (!verificationData) {
       return c.json(
         Responses.badRequest("Retry sending verification code as a doctor"),
         400
       );
     }
-    const temp = tempUserArr[0];
 
-    if (temp.verificationExpiry && temp.verificationExpiry < new Date()) {
-      return c.json(
-        Responses.badRequest(
-          "Verification code has expired, Request a new code"
-        ),
-        400
-      );
-    }
-
-    if (temp.verificationCode !== code && code !== "000000") {
+    if (verificationData.code !== code && code !== "000000") {
       return c.json(Responses.badRequest("Invalid verification code"), 400);
     }
 
-    await db.delete(TempUser).where(eq(TempUser.phone, phone));
+    // Delete verification data from KV
+    await del(`${authKVPrefix}${phone}`);
 
     let doctor = await findDoctorByNumber(phone);
     let isNewDoctor = false;
