@@ -5,13 +5,15 @@ const secretKey = process.env.JWT_SECRET || "default_secret";
 export interface Token {
   id: string;
   phone: string;
+  userType: "user" | "doctor";
 }
 
-export function getToken(user: Token) {
-  return sign(
+export async function getToken(user: Token) {
+  return await sign(
     {
       id: user.id,
       phone: user.phone,
+      userType: user.userType,
     },
     secretKey
   );

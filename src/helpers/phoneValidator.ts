@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../db/db";
 import { doctors, users } from "../db/schema";
 
-export type UserType = "user" | "doctor" ;
+export type UserType = "user" | "doctor";
 
 export interface PhoneCheckResult {
   exists: boolean;
@@ -63,4 +63,31 @@ export async function validatePhoneAvailable(
   if (result.exists && result.userType !== excludeType) {
     throw new Error(result.message || "Phone number already exists");
   }
+}
+
+export async function notInUser(phone: string): Promise<boolean> {
+  const result = await db
+    .select()
+    .from(users)
+    .where(eq(users.phone, phone))
+    .limit(1);
+  return !result.length;
+}
+
+export async function notInDoc(phone: string): Promise<boolean> {
+  const result = await db
+    .select()
+    .from(doctors)
+    .where(eq(doctors.phone, phone))
+    .limit(1);
+  return !result.length;
+}
+
+export async function canBeUser(phone: string): Promise<boolean> {
+  return await notInDoc(phone);
+}
+
+
+export async function canBeDoctor(phone: string): Promise<boolean> {
+  return await notInUser(phone);
 }
