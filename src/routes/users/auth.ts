@@ -107,12 +107,6 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
     let isNewUser = false;
 
     if (!user) {
-      if (!(await canBeUser(phone))) {
-        return c.json(
-          Responses.badRequest("Phone number is not available as a user"),
-          400
-        );
-      }
       const newUserArr = await db.insert(users).values({ phone }).returning({
         id: users.id,
         name: users.name,
@@ -125,10 +119,6 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
       });
       user = newUserArr[0];
       isNewUser = true;
-    }
-
-    if (!user) {
-      return c.json(Responses.serverError("User creation failed"), 500);
     }
 
     const token = await getToken({

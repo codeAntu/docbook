@@ -6,7 +6,7 @@ import { db } from "../../db/db";
 import { doctors } from "../../db/schema/doctor";
 import { TempUser } from "../../db/schema/tempUser";
 import { findDoctorByNumber } from "../../helpers/doctors/doctors";
-import { canBeDoctor, checkPhoneExists } from "../../helpers/phoneValidator";
+import { canBeDoctor } from "../../helpers/phoneValidator";
 import { sendVerificationCode } from "../../sms/sms";
 import { Responses } from "../../utils/responses";
 import { getToken } from "../../utils/token";
@@ -107,12 +107,6 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
     let isNewDoctor = false;
 
     if (!doctor) {
-      if (!(await canBeDoctor(phone))) {
-        return c.json(
-          Responses.badRequest("Phone number is not available as a doctor"),
-          400
-        );
-      }
       const newDoctorArr = await db
         .insert(doctors)
         .values({ phone })
@@ -133,10 +127,6 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
         });
       doctor = newDoctorArr[0];
       isNewDoctor = true;
-    }
-
-    if (!doctor) {
-      return c.json(Responses.serverError("Doctor creation failed"), 500);
     }
 
     const token = await getToken({
