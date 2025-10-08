@@ -3,10 +3,10 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import z from "zod";
 import { db } from "../../db/db";
+import { doctors } from "../../db/schema/doctor";
 import { TempUser } from "../../db/schema/tempUser";
-import { users } from "../../db/schema/users";
+import { findDoctorByNumber } from "../../helpers/doctors/doctors";
 import { checkPhoneExists } from "../../helpers/phoneValidator";
-import { findUserByNumber } from "../../helpers/users/users";
 import { sendVerificationCode } from "../../sms/sms";
 import { Responses } from "../../utils/responses";
 import { getToken } from "../../utils/token";
@@ -44,7 +44,7 @@ auth.post("/send-code", zValidator("json", zSendCode), async (c) => {
           verificationExpiry: new Date(expirationTime),
         },
       });
-0
+
     // Send SMS with verification code
     await sendVerificationCode(phone, code);
 
@@ -94,25 +94,25 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
       return c.json(Responses.badRequest("Invalid verification code"), 400);
     }
 
-    const existingUser = await findUserByNumber(phone);
+    const existingDoctor = await findDoctorByNumber(phone);
     await db.delete(TempUser).where(eq(TempUser.phone, phone));
 
-    if (existingUser) {
+    if (existingDoctor) {
       const token = getToken({
-        id: existingUser.id,
-        phone: existingUser.phone,
+        id: existingDoctor.id,
+        phone: existingDoctor.phone,
       });
       return c.json(
         Responses.success("Login successful", {
           token,
-          user: existingUser,
-          isNewUser: false,
+          doctor: existingDoctor,
+          isNewDoctor: false,
         }),
         200
       );
     }
 
-    // Check if phone exists in any user type before creating new user
+    // Check if phone exists in any user type before creating new doctor
     const phoneCheck = await checkPhoneExists(phone);
     if (phoneCheck.exists) {
       return c.json(
@@ -123,19 +123,25 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
       );
     }
 
-    const newUser = await db.insert(users).values({ phone }).returning({
-      id: users.id,
-      phone: users.phone,
-      email: users.email,
-      dateOfBirth: users.dateOfBirth,
-      profilePicture: users.profilePicture,
+    const newDoctor = await db.insert(doctors).values({ phone }).returning({
+      id: doctors.id,
+      name: doctors.name,
+      phone: doctors.phone,
+      email: doctors.email,
+      about: doctors.about,
+      gender: doctors.gender,
+      profilePicture: doctors.profilePicture,
+      qualifications: doctors.qualifications,
+      specialty: doctors.specialty,
+      department: doctors.department,
+      departmentId: doctors.departmentId,
     });
-    const token = getToken(newUser[0]);
+    const token = getToken(newDoctor[0]);
     return c.json(
       Responses.success("Registration successful", {
         token,
-        user: newUser[0],
-        isNewUser: true,
+        doctor: newDoctor[0],
+        isNewDoctor: true,
       }),
       201
     );

@@ -1,8 +1,10 @@
 // Export all tables
-export * from "./doctor";
 export * from "./department";
+export * from "./doctor";
 export * from "./helpers";
+export * from "./tempUser";
+export * from "./users";
 
 // Export all relations
-export { doctorsRelations } from "./doctor";
 export { departmentsRelations } from "./department";
+export { doctorsRelations } from "./doctor";

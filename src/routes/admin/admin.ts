@@ -5,7 +5,7 @@ import { db } from "../../db/db";
 import { doctors } from "../../db/schema";
 import { Responses } from "../../utils/responses";
 
-const admin = new Hono();
+const adminRoute = new Hono();
 
 const zDoctor = z.object({
   name: z.string().min(3).max(256),
@@ -15,7 +15,7 @@ const zDoctor = z.object({
   specialization: z.string().min(2).max(100).optional(),
 });
 
-admin.get("/doctors", async (c) => {
+adminRoute.get("/doctors", async (c) => {
   try {
     const allDoctors = await db.select().from(doctors);
 
@@ -29,7 +29,7 @@ admin.get("/doctors", async (c) => {
   }
 });
 
-admin.post("/doctors", zValidator("json", zDoctor), async (c) => {
+adminRoute.post("/doctors", zValidator("json", zDoctor), async (c) => {
   try {
     const doctorData = c.req.valid("json");
     const newDoctor = await db.insert(doctors).values(doctorData).returning();
@@ -45,4 +45,4 @@ admin.post("/doctors", zValidator("json", zDoctor), async (c) => {
   }
 });
 
-export default admin;
+export default adminRoute;

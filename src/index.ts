@@ -1,11 +1,13 @@
 import { Hono } from "hono";
-import admin from "./routes/admin/admin";
-import users from "./routes/users/users";
+import adminRoute from "./routes/admin/admin";
+import doctorsRoute from "./routes/doctors/doctors";
+import userRoutes from "./routes/users/users";
 
 const app = new Hono().basePath("/api");
 
-app.route("/users", users);
-app.route("/admin", admin);
+app.route("/users", userRoutes);
+app.route("/doctors", doctorsRoute);
+app.route("/admin", adminRoute);
 
 app.get("/", (c) => {
   return c.text("Hello Hono!");

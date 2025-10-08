@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import auth from "./auth";
 
-const users = new Hono();
+const userRoutes = new Hono();
 
-users.route("/", auth);
+userRoutes.route("/", auth);
 
-export default users;
+export default userRoutes;
