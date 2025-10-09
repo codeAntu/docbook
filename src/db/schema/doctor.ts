@@ -1,42 +1,16 @@
 import { relations } from "drizzle-orm";
-import { pgTable } from "drizzle-orm/pg-core";
-import { departments } from "./department";
-import {
-  About,
-  CreatedAt,
-  DateOfBirth,
-  Department,
-  DepartmentId,
-  Email,
-  Gender,
-  ID,
-  Name,
-  Phone,
-  ProfilePicture,
-  Qualifications,
-  Specialty,
-  UpdatedAt,
-} from "./helpers";
+import { pgTable, varchar } from "drizzle-orm/pg-core";
+import { doctorSchedules } from "./doctorSchedule";
+import { CreatedAt, Email, Phone, Specialty } from "./helpers";
 
 export const doctors = pgTable("doctors", {
-  id: ID,
-  name: Name,
-  phone: Phone.unique(),
-  email: Email.unique(),
-  about: About,
-  gender: Gender,
-  profilePicture: ProfilePicture,
-  qualifications: Qualifications,
-  specialty: Specialty,
-  department: Department,
-  departmentId: DepartmentId.references(() => departments.id),
+  doctorName: varchar("doctor_name", { length: 100 }).primaryKey(),
+  specialization: Specialty,
+  contactNumber: Phone,
+  email: Email,
   createdAt: CreatedAt,
-  updatedAt: UpdatedAt,
 });
 
-export const doctorsRelations = relations(doctors, ({ one }) => ({
-  department: one(departments, {
-    fields: [doctors.departmentId],
-    references: [departments.id],
-  }),
+export const doctorsRelations = relations(doctors, ({ many }) => ({
+  schedules: many(doctorSchedules),
 }));
