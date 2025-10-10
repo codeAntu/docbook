@@ -3,9 +3,9 @@ import { Hono } from "hono";
 import z from "zod";
 import { db } from "../../db/db";
 import { users } from "../../db/schema/users";
-import { del, get, put, VerificationData } from "../../helpers/kv/verification";
-import { canBeUser } from "../../helpers/phoneValidator";
-import { findUserByNumber } from "../../helpers/users/users";
+import KV, { VerificationData } from "../../helpers/kv/verification";
+import { canBeUser } from "../../services/phoneValidator";
+import { findUserByNumber } from "../../services/users/users";
 import { sendVerificationCode } from "../../sms/sms";
 import { Responses } from "../../utils/responses";
 import { getToken } from "../../utils/token";
@@ -38,7 +38,7 @@ async function sendCode(c: any) {
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await put<VerificationData>(
+    await KV.put<VerificationData>(
       `${authKVPrefix}${phone}`,
       {
         code,
@@ -68,7 +68,7 @@ async function verifyCode(c: any) {
   try {
     const { phone, code } = c.req.valid("json");
 
-    const verificationData = await get<VerificationData>(
+    const verificationData = await KV.get<VerificationData>(
       `${authKVPrefix}${phone}`
     );
 
@@ -79,28 +79,33 @@ async function verifyCode(c: any) {
       );
     }
 
+    
+
     if (verificationData.code !== code && code !== "000000") {
       return c.json(Responses.badRequest("Invalid verification code"), 400);
     }
 
-    await del(`${authKVPrefix}${phone}`);
+    await KV.del(`${authKVPrefix}${phone}`);
 
     let user = await findUserByNumber(phone);
     let isNewUser = false;
 
     if (!user) {
-      const newUserArr = await db.insert(users).values({ 
-        phone, 
-      }).returning({
-        id: users.id,
-        name: users.name,
-        phone: users.phone,
-        email: users.email,
-        dateOfBirth: users.dateOfBirth,
-        profilePicture: users.profilePicture,
-        createdAt: users.createdAt,
-        updatedAt: users.updatedAt,
-      });
+      const newUserArr = await db
+        .insert(users)
+        .values({
+          phone,
+        })
+        .returning({
+          id: users.id,
+          name: users.name,
+          phone: users.phone,
+          email: users.email,
+          dateOfBirth: users.dateOfBirth,
+          profilePicture: users.profilePicture,
+          createdAt: users.createdAt,
+          updatedAt: users.updatedAt,
+        });
       user = newUserArr[0];
       isNewUser = true;
     }

@@ -8,16 +8,18 @@ import {
   Email,
   ID,
   Name,
+  Password,
   Type,
 } from "./helpers";
 
 export const healthcareProviders = pgTable("healthcare_providers", {
   id: ID,
   name: Name.notNull(),
+  email: Email.notNull(),
   type: Type,
   address: Address,
   contactNumber: ContactNumber,
-  email: Email,
+  password: Password,
   createdAt: CreatedAt,
 });
 

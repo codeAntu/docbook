@@ -65,6 +65,7 @@ export const Phone = textField("phone", 15).notNull();
 export const ContactNumber = textField("contact_number", 15);
 export const Address = textField("address", 200);
 export const Type = textField("type", 50);
+export const Password = textField("password", 100).notNull();
 
 // User Fields
 export const ProfilePicture = textField("profile_picture", 512);

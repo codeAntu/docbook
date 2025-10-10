@@ -5,8 +5,9 @@ const secretKey = ENV.JWT_SECRET || "default_secret";
 
 export interface Token {
   id: string;
-  phone: string;
-  userType: "user" | "doctor";
+  userType: "user" | "doctor" | "hp";
+  phone?: string;
+  email?: string;
 }
 
 export async function getToken(user: Token) {
@@ -15,6 +16,7 @@ export async function getToken(user: Token) {
       id: user.id,
       phone: user.phone,
       userType: user.userType,
+      email: user.email,
     },
     secretKey
   );
