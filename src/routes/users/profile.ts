@@ -6,10 +6,10 @@ import { db } from "../../db/db";
 import { users } from "../../db/schema/users";
 import { authMiddleware, requireUserType } from "../../utils/authMiddleware";
 import { Responses } from "../../utils/responses";
-import { Token } from "../../utils/token";
+import { UserAuthToken } from "../../utils/token";
 
 type Variables = {
-  user: Token;
+  user: UserAuthToken;
 };
 
 const profile = new Hono<{ Variables: Variables }>();

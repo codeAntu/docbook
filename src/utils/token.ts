@@ -3,29 +3,36 @@ import { ENV } from "../utils/env";
 
 const secretKey = ENV.JWT_SECRET || "default_secret";
 
-export interface Token {
+export interface UserAuthToken {
   id: string;
-  userType: "user" | "doctor" | "hp";
+  userType: "user";
   phone?: string;
+}
+
+export interface HpAuthToken {
+  id: string;
+  userType: "hp";
   email?: string;
 }
 
-export async function getToken(user: Token) {
+export type AuthToken = UserAuthToken | HpAuthToken;
+
+export async function getToken(user: AuthToken) {
   return await sign(
     {
       id: user.id,
-      phone: user.phone,
       userType: user.userType,
-      email: user.email,
+      phone: (user as UserAuthToken).phone,
+      email: (user as HpAuthToken).email,
     },
     secretKey
   );
 }
 
-export function verifyToken(token: string): Token | null {
+export function verifyToken(token: string): AuthToken | null {
   try {
     const { header, payload } = decode(token);
-    return payload as unknown as Token;
+    return payload as unknown as AuthToken;
   } catch (error) {
     console.error("Token verification failed:", error);
     return null;

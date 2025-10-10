@@ -8,14 +8,19 @@ import {
   ID,
   Name,
   textField,
+  uuidRef,
 } from "./helpers";
+import { healthcareProviders } from "./healthcareProvider";
 
 export const doctors = pgTable("doctors", {
   id: ID,
   name: Name.notNull(),
-  email: varchar("email").unique(),
-  specialization: textField("specialization"),
+  email: varchar("email"),
+  specialization: textField("specialization").notNull(),
   contactNumber: ContactNumber,
+  hpId: uuidRef("hp_id")
+    .references(() => healthcareProviders.id)
+    .notNull(),
   createdAt: CreatedAt,
 });
 

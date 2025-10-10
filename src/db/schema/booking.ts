@@ -12,8 +12,12 @@ import { users } from "./users";
 
 export const bookings = pgTable("bookings", {
   id: ID,
-  scheduleId: uuidRef("schedule_id").references(() => doctorSchedules.id),
-  userId: uuidRef("user_id").references(() => users.id),
+  scheduleId: uuidRef("schedule_id")
+    .references(() => doctorSchedules.id)
+    .notNull(),
+  userId: uuidRef("user_id")
+    .references(() => users.id)
+    .notNull(),
   bookingForDate: BookingForDate,
   bookingStatus: BookingStatus,
   createdAt: CreatedAt,
