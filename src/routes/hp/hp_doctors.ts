@@ -8,9 +8,8 @@ import {
   getDoctorById,
   updateDoctor,
 } from "../../services/doctors/doctors";
-import { authMiddleware, requireUserType } from "../../utils/authMiddleware";
 import { Responses } from "../../utils/responses";
-import { HpAuthToken } from "../../utils/token";
+import { HpVariables } from "./hp";
 
 const createDoctorSchema = z.object({
   name: z.string().min(2).max(100),
@@ -19,14 +18,7 @@ const createDoctorSchema = z.object({
   contactNumber: z.string().min(10).max(15).optional(),
 });
 
-type Variables = {
-  user: HpAuthToken;
-};
-
-const hpDoctorsRouter = new Hono<{ Variables: Variables }>();
-
-// Apply authentication middleware to all routes
-hpDoctorsRouter.use("*", authMiddleware, requireUserType("hp"));
+const hpDoctorsRouter = new Hono<{ Variables: HpVariables }>();
 
 hpDoctorsRouter.get("/", async (c) => {
   try {

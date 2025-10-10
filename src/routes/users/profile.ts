@@ -6,13 +6,9 @@ import { db } from "../../db/db";
 import { users } from "../../db/schema/users";
 import { authMiddleware, requireUserType } from "../../utils/authMiddleware";
 import { Responses } from "../../utils/responses";
-import { UserAuthToken } from "../../utils/token";
+import { UserVariables } from "./users";
 
-type Variables = {
-  user: UserAuthToken;
-};
-
-const profile = new Hono<{ Variables: Variables }>();
+const profile = new Hono<{ Variables: UserVariables }>();
 
 profile.use("/*", authMiddleware, requireUserType("user"));
 

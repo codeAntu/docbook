@@ -1,8 +1,13 @@
 import { Hono } from "hono";
+import { UserAuthToken } from "../../utils/token";
 import auth from "./auth";
 import profile from "./profile";
 
-const userRoutes = new Hono();
+export type UserVariables = {
+  user: UserAuthToken;
+};
+
+const userRoutes = new Hono<{ Variables: UserVariables }>();
 
 userRoutes.route("/", auth);
 userRoutes.route("/profile", profile);
