@@ -91,7 +91,7 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
     if (!doctor) {
       const newDoctorArr = await db
         .insert(doctors)
-        .values({ doctorName: "Doctor", contactNumber: phone })
+        .values({ name: "Doctor", contactNumber: phone })
         .returning();
 
       doctor = newDoctorArr[0];
@@ -100,7 +100,7 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
 
     const token = await getToken({
       id: doctor.id,
-      phone: doctor.contactNumber,
+      phone: doctor.contactNumber || "",
       userType: "doctor",
     });
     return c.json(

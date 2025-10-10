@@ -1,13 +1,22 @@
 import { relations } from "drizzle-orm";
-import { pgTable, varchar } from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
 import { doctorSchedules } from "./doctorSchedule";
-import { CreatedAt, Email, Phone } from "./helpers";
+import {
+  Address,
+  ContactNumber,
+  CreatedAt,
+  Email,
+  ID,
+  Name,
+  Type,
+} from "./helpers";
 
 export const healthcareProviders = pgTable("healthcare_providers", {
-  hpName: varchar("hp_name", { length: 100 }).primaryKey(),
-  hpType: varchar("hp_type", { length: 50 }),
-  address: varchar("address", { length: 200 }),
-  contactNumber: Phone,
+  id: ID,
+  name: Name.notNull(),
+  type: Type,
+  address: Address,
+  contactNumber: ContactNumber,
   email: Email,
   createdAt: CreatedAt,
 });

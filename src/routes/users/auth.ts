@@ -89,7 +89,9 @@ async function verifyCode(c: any) {
     let isNewUser = false;
 
     if (!user) {
-      const newUserArr = await db.insert(users).values({ phone }).returning({
+      const newUserArr = await db.insert(users).values({ 
+        phone, 
+      }).returning({
         id: users.id,
         name: users.name,
         phone: users.phone,

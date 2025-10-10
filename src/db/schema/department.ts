@@ -1,11 +1,11 @@
 import { relations } from "drizzle-orm";
-import { pgTable, varchar } from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
 import { doctors } from "./doctor";
-import { CreatedAt, Description, ID, UpdatedAt } from "./helpers";
+import { CreatedAt, Description, ID, Name, UpdatedAt } from "./helpers";
 
 export const departments = pgTable("departments", {
   id: ID,
-  name: varchar("name", { length: 256 }).notNull().unique(),
+  name: Name.unique(),
   description: Description,
   createdAt: CreatedAt,
   updatedAt: UpdatedAt,

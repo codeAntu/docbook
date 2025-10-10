@@ -33,7 +33,7 @@ profile.get("/", async (c) => {
     const doctor = await db
       .select({
         id: doctors.id,
-        name: doctors.doctorName,
+        name: doctors.name,
         email: doctors.email,
       })
       .from(doctors)

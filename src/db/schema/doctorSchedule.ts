@@ -1,31 +1,31 @@
 import { relations } from "drizzle-orm";
-import {
-  boolean,
-  integer,
-  pgTable,
-  serial,
-  time,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { pgTable } from "drizzle-orm/pg-core";
 import { doctors } from "./doctor";
 import { healthcareProviders } from "./healthcareProvider";
-import { CreatedAt } from "./helpers";
+import {
+  CreatedAt,
+  DayOfMonth,
+  DayOfWeek,
+  EndTime,
+  ID,
+  IsActive,
+  MaxBookings,
+  ScheduleType,
+  StartTime,
+  uuidRef,
+} from "./helpers";
 
 export const doctorSchedules = pgTable("doctor_schedules", {
-  scheduleId: serial("schedule_id").primaryKey(),
-  hpName: varchar("hp_name", { length: 100 })
-    .notNull()
-    .references(() => healthcareProviders.hpName),
-  doctorName: varchar("doctor_name", { length: 100 })
-    .notNull()
-    .references(() => doctors.doctorName),
-  scheduleType: varchar("schedule_type", { length: 20 }).notNull(), // 'Daily','Weekly','Monthly'
-  dayOfWeek: integer("day_of_week"), // 0=Sun...6=Sat
-  dayOfMonth: integer("day_of_month"), // 1-31
-  startTime: time("start_time").notNull(),
-  endTime: time("end_time").notNull(),
-  maxBookings: integer("max_bookings").notNull().default(1),
-  isActive: boolean("is_active").default(true),
+  id: ID,
+  hpId: uuidRef("hp_id").references(() => healthcareProviders.id),
+  doctorId: uuidRef("doctor_id").references(() => doctors.id),
+  scheduleType: ScheduleType,
+  dayOfWeek: DayOfWeek,
+  dayOfMonth: DayOfMonth,
+  startTime: StartTime,
+  endTime: EndTime,
+  maxBookings: MaxBookings,
+  isActive: IsActive,
   createdAt: CreatedAt,
 });
 
@@ -33,12 +33,12 @@ export const doctorSchedulesRelations = relations(
   doctorSchedules,
   ({ one }) => ({
     healthcareProvider: one(healthcareProviders, {
-      fields: [doctorSchedules.hpName],
-      references: [healthcareProviders.hpName],
+      fields: [doctorSchedules.hpId],
+      references: [healthcareProviders.id],
     }),
     doctor: one(doctors, {
-      fields: [doctorSchedules.doctorName],
-      references: [doctors.doctorName],
+      fields: [doctorSchedules.doctorId],
+      references: [doctors.id],
     }),
   })
 );
