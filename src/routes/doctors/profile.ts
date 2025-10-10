@@ -33,18 +33,8 @@ profile.get("/", async (c) => {
     const doctor = await db
       .select({
         id: doctors.id,
-        name: doctors.name,
-        phone: doctors.phone,
+        name: doctors.doctorName,
         email: doctors.email,
-        about: doctors.about,
-        gender: doctors.gender,
-        profilePicture: doctors.profilePicture,
-        qualifications: doctors.qualifications,
-        specialty: doctors.specialty,
-        department: doctors.department,
-        departmentId: doctors.departmentId,
-        createdAt: doctors.createdAt,
-        updatedAt: doctors.updatedAt,
       })
       .from(doctors)
       .where(eq(doctors.id, userData.id))
@@ -79,21 +69,7 @@ profile.put("/", zValidator("json", zUpdateProfile), async (c) => {
       .update(doctors)
       .set(updateData)
       .where(eq(doctors.id, userData.id))
-      .returning({
-        id: doctors.id,
-        name: doctors.name,
-        phone: doctors.phone,
-        email: doctors.email,
-        about: doctors.about,
-        gender: doctors.gender,
-        profilePicture: doctors.profilePicture,
-        qualifications: doctors.qualifications,
-        specialty: doctors.specialty,
-        department: doctors.department,
-        departmentId: doctors.departmentId,
-        createdAt: doctors.createdAt,
-        updatedAt: doctors.updatedAt,
-      });
+      .returning();
 
     if (!updated.length) {
       return c.json(Responses.badRequest("Doctor not found"), 404);

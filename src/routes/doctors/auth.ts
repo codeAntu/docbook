@@ -23,6 +23,8 @@ const zVerifyCode = z.object({
 
 const authKVPrefix = `verification:doctor:`;
 
+// We are not using this routes, we don't need doctor authentication for now
+
 auth.post("/send-code", zValidator("json", zSendCode), async (c) => {
   try {
     const { phone } = c.req.valid("json");
@@ -89,29 +91,16 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
     if (!doctor) {
       const newDoctorArr = await db
         .insert(doctors)
-        .values({ phone })
-        .returning({
-          id: doctors.id,
-          name: doctors.name,
-          phone: doctors.phone,
-          email: doctors.email,
-          about: doctors.about,
-          gender: doctors.gender,
-          profilePicture: doctors.profilePicture,
-          qualifications: doctors.qualifications,
-          specialty: doctors.specialty,
-          department: doctors.department,
-          departmentId: doctors.departmentId,
-          createdAt: doctors.createdAt,
-          updatedAt: doctors.updatedAt,
-        });
+        .values({ doctorName: "Doctor", contactNumber: phone })
+        .returning();
+
       doctor = newDoctorArr[0];
       isNewDoctor = true;
     }
 
     const token = await getToken({
       id: doctor.id,
-      phone: doctor.phone,
+      phone: doctor.contactNumber,
       userType: "doctor",
     });
     return c.json(

@@ -10,8 +10,6 @@ import { sendVerificationCode } from "../../sms/sms";
 import { Responses } from "../../utils/responses";
 import { getToken } from "../../utils/token";
 
-const auth = new Hono();
-
 const zSendCode = z.object({
   phone: z.string().min(10).max(15),
 });
@@ -23,7 +21,11 @@ const zVerifyCode = z.object({
 
 const authKVPrefix = `verification:user:`;
 
-auth.post("/send-code", zValidator("json", zSendCode), async (c) => {
+const auth = new Hono()
+  .post("/send-code", zValidator("json", zSendCode), sendCode)
+  .post("/verify-code", zValidator("json", zVerifyCode), verifyCode);
+
+async function sendCode(c: any) {
   try {
     const { phone } = c.req.valid("json");
 
@@ -60,9 +62,9 @@ auth.post("/send-code", zValidator("json", zSendCode), async (c) => {
       500
     );
   }
-});
+}
 
-auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
+async function verifyCode(c: any) {
   try {
     const { phone, code } = c.req.valid("json");
 
@@ -120,6 +122,6 @@ auth.post("/verify-code", zValidator("json", zVerifyCode), async (c) => {
   } catch (error) {
     return c.json(Responses.serverError("Verification failed", error), 500);
   }
-});
+}
 
 export default auth;

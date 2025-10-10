@@ -1,6 +1,7 @@
-import { sign, decode } from "hono/jwt";
+import { decode, sign } from "hono/jwt";
+import { ENV } from "../utils/env";
 
-const secretKey = process.env.JWT_SECRET || "default_secret";
+const secretKey = ENV.JWT_SECRET || "default_secret";
 
 export interface Token {
   id: string;

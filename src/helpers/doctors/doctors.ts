@@ -6,7 +6,7 @@ export async function findDoctorByNumber(phone: string) {
   const doctor = await db
     .select()
     .from(doctors)
-    .where(eq(doctors.phone, phone))
+    .where(eq(doctors.contactNumber, phone))
     .limit(1);
 
   return doctor.length ? doctor[0] : null;

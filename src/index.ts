@@ -13,4 +13,5 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
+export type appType = typeof app;
 export default app;

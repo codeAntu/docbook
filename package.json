@@ -9,7 +9,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "ts": "tsc --noEmit"
+    "ts": "tsc --noEmit",
+    "build:rpc": "tsc -p tsconfig.rpc.json"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.7.3",

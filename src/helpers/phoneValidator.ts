@@ -29,20 +29,20 @@ export async function checkPhoneExists(
       };
     }
 
-    // Check in doctors table
-    const existingDoctor = await db
-      .select({ id: doctors.id, phone: doctors.phone })
-      .from(doctors)
-      .where(eq(doctors.phone, phone))
-      .limit(1);
+    // // Check in doctors table
+    // const existingDoctor = await db
+    //   .select({ id: doctors.id, phone: doctors.phone })
+    //   .from(doctors)
+    //   .where(eq(doctors.phone, phone))
+    //   .limit(1);
 
-    if (existingDoctor.length) {
-      return {
-        exists: true,
-        userType: "doctor",
-        message: "Phone number already registered as a doctor",
-      };
-    }
+    // if (existingDoctor.length) {
+    //   return {
+    //     exists: true,
+    //     userType: "doctor",
+    //     message: "Phone number already registered as a doctor",
+    //   };
+    // }
 
     return {
       exists: false,
@@ -78,7 +78,7 @@ export async function notInDoc(phone: string): Promise<boolean> {
   const result = await db
     .select()
     .from(doctors)
-    .where(eq(doctors.phone, phone))
+    .where(eq(doctors.contactNumber, phone))
     .limit(1);
   return !result.length;
 }
@@ -86,7 +86,6 @@ export async function notInDoc(phone: string): Promise<boolean> {
 export async function canBeUser(phone: string): Promise<boolean> {
   return await notInDoc(phone);
 }
-
 
 export async function canBeDoctor(phone: string): Promise<boolean> {
   return await notInUser(phone);
