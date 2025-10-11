@@ -44,7 +44,6 @@ export async function createSchedule(
       scheduleType: scheduleData.scheduleType,
       weekDaysMask,
       monthDaysMask,
-      isActive: true,
     })
     .returning();
 
@@ -85,4 +84,21 @@ export async function createSchedule(
   }
 
   return newSchedule;
+}
+
+export async function deleteSchedule(hpId: string, scheduleId: string) {
+  // Set scheduleStatus to 'cancelled' for the doctor schedule
+  const result = await db
+    .update(doctorSchedules)
+    .set({ scheduleStatus: "deleted" })
+    .where(
+      and(eq(doctorSchedules.id, scheduleId), eq(doctorSchedules.hpId, hpId))
+    )
+    .execute();
+
+  if (result.rowCount === 0) {
+    throw new Error(
+      "Schedule not found or does not belong to the healthcare provider"
+    );
+  }
 }

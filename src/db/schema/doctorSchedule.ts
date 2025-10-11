@@ -16,6 +16,7 @@ import {
   ID,
   IsActive,
   MaxBookings,
+  ScheduleStatus,
   ScheduleType,
   StartTime,
   uuidRef,
@@ -35,8 +36,7 @@ export const doctorSchedules = pgTable("doctor_schedules", {
   // For monthly: bit 0 = day 1, bit 1 = day 2, ..., bit 30 = day 31
   // Example: 0b1000000000000001 = 32769 means day 1 + day 16 available
   monthDaysMask: integer("month_days_mask").default(0),
-
-  isActive: IsActive, 
+  scheduleStatus: ScheduleStatus("schedule_status").default("active"),
   createdAt: CreatedAt,
 });
 

@@ -26,6 +26,12 @@ export const bookingStatusEnum = pgEnum("booking_status", [
   "no_show",
 ]);
 
+export const ScheduleStatus = pgEnum("schedule_status", [
+  "active",
+  "cancelled",
+  "deleted",
+]);
+
 export const id = () => uuid("id").primaryKey().defaultRandom();
 
 export const textField = (name: string, length = 256) =>

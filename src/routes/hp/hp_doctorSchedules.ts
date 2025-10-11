@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import z from "zod";
-import { createSchedule } from "../../services/schedules";
+import { createSchedule, deleteSchedule } from "../../services/schedules";
 import { Responses } from "../../utils/responses";
 import { HpVariables } from "./hp";
 
@@ -102,5 +102,26 @@ hpDoctorSchedulesRouter.post(
     }
   }
 );
+
+hpDoctorSchedulesRouter.delete("/:id", async (c) => {
+  try {
+    const user = c.get("user");
+    const scheduleId = c.req.param("id");
+    await deleteSchedule(user.id, scheduleId);
+    return c.json(Responses.success("Doctor schedule deleted"), 200);
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message ===
+        "Schedule not found or does not belong to the healthcare provider"
+    ) {
+      return c.json(Responses.badRequest(error.message), 404);
+    }
+    return c.json(
+      Responses.serverError("Failed to delete doctor schedule", error),
+      500
+    );
+  }
+});
 
 export default hpDoctorSchedulesRouter;
