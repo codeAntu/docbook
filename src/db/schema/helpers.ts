@@ -13,17 +13,17 @@ import {
 export const genderEnum = pgEnum("gender", ["male", "female", "other"]);
 
 export const scheduleTypeEnum = pgEnum("schedule_type", [
-  "Daily",
-  "Weekly",
-  "Monthly",
+  "daily",
+  "weekly",
+  "monthly",
 ]);
 
 export const bookingStatusEnum = pgEnum("booking_status", [
-  "Pending",
-  "Confirmed",
-  "Cancelled",
-  "Completed",
-  "NoShow",
+  "pending",
+  "confirmed",
+  "cancelled",
+  "completed",
+  "no_show",
 ]);
 
 export const id = () => uuid("id").primaryKey().defaultRandom();
@@ -87,7 +87,7 @@ export const IsActive = boolField("is_active", true);
 // Booking Fields
 export const BookingForDate = dateField("booking_for_date");
 export const BookingStatus =
-  bookingStatusEnum("booking_status").default("Pending");
+  bookingStatusEnum("booking_status").default("pending");
 
 // Timestamps
 export const CreatedAt = createdAt();
